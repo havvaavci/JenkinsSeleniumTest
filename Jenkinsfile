@@ -38,7 +38,7 @@ pipeline {
             archiveArtifacts artifacts: 'target/*.png', allowEmptyArchive: true
 
             // Allure raporu (pom.xml'deki verileri okur)
-            allure includeProperties: false, results: [[path: 'target/allure-results']]
+            allure includeProperties: false, results: [[path: '**/allure-results']]
         }
 
         failure {
