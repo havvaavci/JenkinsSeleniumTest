@@ -20,6 +20,7 @@ public class FirstJenkinsTest {
 
         driver.get("https://www.amazon.com");
         System.out.println("Başarıyla bağlandık! Sayfa başlığı: " + driver.getTitle());
+        System.out.println("Webhook ile baglanip jenkinsden triggerle test calistirma denemesi");
 
         driver.quit();
     }
