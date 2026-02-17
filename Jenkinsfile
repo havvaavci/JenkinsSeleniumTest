@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    triggers {
+        // Her gece saat 03:00'te otomatik çalıştır
+        cron('0 3 * * *')
+    }
     parameters {
         choice(name: 'BROWSER', choices: ['chrome', 'firefox', 'edge'], description: 'Hangi tarayıcıda çalışsın?')
     }
@@ -37,6 +41,11 @@ pipeline {
     }
 
     post {
+        post {
+            always {
+                allure includeProperties: false, results: [[path: 'target/allure-results']]
+            }
+        }
         failure {
             mail to: 'havvabuyukyalcin@gmail.com',
                     subject: "HATA: ${currentBuild.fullDisplayName} Başarısız!",

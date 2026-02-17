@@ -1,10 +1,16 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+
+import java.io.File;
+import java.io.IOException;
 
 public class FirstJenkinsTest {
     @Test
@@ -35,11 +41,22 @@ public class FirstJenkinsTest {
             driver = new ChromeDriver(options);
         }
 
-        // 3. ADIM: Test Adımları (Aynı kalıyor)
-        driver.get("https://www.google.com");
-        System.out.println("Şu an çalışan tarayıcı: " + browser);
-        System.out.println("Başarıyla bağlandık! Sayfa başlığı: " + driver.getTitle());
-
-        driver.quit();
+        try {
+            driver.get("https://www.google.com");
+            // Hata yaptırmak için yanlış bir assertion ekleyelim (Opsiyonel)
+            // Assertions.assertEquals("Yanlış Başlık", driver.getTitle());
+        } catch (Exception e) {
+            // Hata olduğunda screenshot al
+            File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            try {
+                // Dosyayı target klasörüne kaydet ki Jenkins bulabilsin
+                FileUtils.copyFile(scrFile, new File("target/screenshot.png"));
+                System.out.println("Hata oluştu, screenshot alındı!");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            throw e; // Testin başarısız olduğunu Jenkins'e bildir
+        } finally {
+            driver.quit();
     }
 }
