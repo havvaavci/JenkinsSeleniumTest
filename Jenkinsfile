@@ -1,57 +1,52 @@
 pipeline {
     agent any
-    triggers {
-        // Her gece saat 03:00'te otomatik çalıştır
-        cron('0 3 * * *')
-    }
-    parameters {
-        choice(name: 'BROWSER', choices: ['chrome', 'firefox', 'edge'], description: 'Hangi tarayıcıda çalışsın?')
+
+    // Jenkins'e hangi Maven sürümünü kullanacağını burada söylüyoruz
+    tools {
+        maven 'Maven3' // Jenkins -> Manage Jenkins -> Tools kısmındaki isimle aynı olmalı
     }
 
-    tools {
-        // Manage Jenkins > Tools kısmında Maven'a verdiğin ismi buraya yaz (Genelde 'Maven3' olur)
-        maven 'Maven3'
+    triggers {
+        cron('0 3 * * *') // Gece 3'te otomatik çalışma
+    }
+
+    parameters {
+        choice(name: 'BROWSER', choices: ['chrome', 'firefox', 'edge'], description: 'Tarayıcı seçiniz:')
     }
 
     stages {
-        stage('1. Adım: Kodları Çek') {
+        stage('1. Kodları Güncelle') {
             steps {
                 checkout scm
             }
         }
 
-        stage('2. Adım: Testleri Koştur') {
+        stage('2. Testleri Koştur') {
             steps {
-                // Parametreyi -Dbrowser komutuyla Maven'a gönderiyoruz
+                // 'mvn' komutu artık 'tools' sayesinde tanınacak
                 sh "mvn clean test -Dbrowser=${params.BROWSER}"
-            }
-        }
-
-        stage('3. Adım: Raporları Yayınla') {
-            steps {
-                junit '**/target/surefire-reports/*.xml'
-            }
-        }
-        stage('4. Adım: Dosyaları Arşivle') {
-            steps {
-                // Test sonuçlarını ve varsa screenshot klasörünü Jenkins üzerinde saklar
-                archiveArtifacts artifacts: 'target/*.xml, target/*.png', allowEmptyArchive: true
             }
         }
     }
 
     post {
+        always {
+            // Standart JUnit raporu
+            junit '**/target/surefire-reports/*.xml'
 
-            always {
-                allure includeProperties: false, results: [[path: 'target/allure-results']]
-            }
-        failure {
-            mail to: 'havvabuyukyalcin@gmail.com',
-                    subject: "HATA: ${currentBuild.fullDisplayName} Başarısız!",
-                    body: "Testler sırasında hata oluştu. Detaylar için buraya bak: ${env.BUILD_URL}"
+            // Ekran görüntüleri (target içinde .png varsa)
+            archiveArtifacts artifacts: 'target/*.png', allowEmptyArchive: true
+
+            // Allure raporu (pom.xml'deki verileri okur)
+            allure includeProperties: false, results: [[path: 'target/allure-results']]
         }
+
+        failure {
+            echo '❌ Test başarısız! Logları ve ekran görüntülerini kontrol edin.'
+        }
+
         success {
-            echo 'Tebrikler! Tüm testler başarıyla tamamlandı.'
+            echo '✅ Tebrikler! Test başarıyla bitti.'
         }
     }
 }
