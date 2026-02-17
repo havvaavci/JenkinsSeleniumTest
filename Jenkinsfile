@@ -41,11 +41,10 @@ pipeline {
     }
 
     post {
-        post {
+
             always {
                 allure includeProperties: false, results: [[path: 'target/allure-results']]
             }
-        }
         failure {
             mail to: 'havvabuyukyalcin@gmail.com',
                     subject: "HATA: ${currentBuild.fullDisplayName} Başarısız!",
