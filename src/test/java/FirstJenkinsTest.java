@@ -18,7 +18,7 @@ public class FirstJenkinsTest {
 
         WebDriver driver = new ChromeDriver(options);
 
-        driver.get("https://www.google.com");
+        driver.get("https://www.amazon.com");
         System.out.println("Başarıyla bağlandık! Sayfa başlığı: " + driver.getTitle());
 
         driver.quit();
