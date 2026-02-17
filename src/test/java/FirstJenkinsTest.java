@@ -18,8 +18,9 @@ public class FirstJenkinsTest {
 
         WebDriver driver = new ChromeDriver(options);
 
-        driver.get("https://www.amazon.com");
+        driver.get("https://www.google.com");
         System.out.println("Başarıyla bağlandık! Sayfa başlığı: " + driver.getTitle());
+        org.junit.jupiter.api.Assertions.assertEquals("Amazon", driver.getTitle());
         System.out.println("Webhook ile baglanip jenkinsden triggerle test calistirma denemesi");
 
         driver.quit();
