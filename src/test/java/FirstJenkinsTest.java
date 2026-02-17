@@ -45,10 +45,10 @@ public class FirstJenkinsTest {
         try {
             driver.get("https://www.google.com");
             // Hata yaptırmak için yanlış bir assertion ekleyelim (Opsiyonel)
-             Assertions.assertEquals("Amazon", driver.getTitle());
+            Assertions.assertEquals("Amazon", driver.getTitle());
         } catch (Exception e) {
             // Hata olduğunda screenshot al
-            File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             try {
                 // Dosyayı target klasörüne kaydet ki Jenkins bulabilsin
                 FileUtils.copyFile(scrFile, new File("target/screenshot.png"));
@@ -59,5 +59,6 @@ public class FirstJenkinsTest {
             throw e; // Testin başarısız olduğunu Jenkins'e bildir
         } finally {
             driver.quit();
+        }
     }
 }
