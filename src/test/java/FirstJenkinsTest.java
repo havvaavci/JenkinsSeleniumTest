@@ -1,5 +1,6 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -44,7 +45,7 @@ public class FirstJenkinsTest {
         try {
             driver.get("https://www.google.com");
             // Hata yaptırmak için yanlış bir assertion ekleyelim (Opsiyonel)
-            // Assertions.assertEquals("Yanlış Başlık", driver.getTitle());
+             Assertions.assertEquals("Amazon", driver.getTitle());
         } catch (Exception e) {
             // Hata olduğunda screenshot al
             File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
