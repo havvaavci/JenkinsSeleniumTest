@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    parameters {
+        choice(name: 'BROWSER', choices: ['chrome', 'firefox', 'edge'], description: 'Hangi tarayıcıda çalışsın?')
+    }
 
     tools {
         // Manage Jenkins > Tools kısmında Maven'a verdiğin ismi buraya yaz (Genelde 'Maven3' olur)
@@ -23,6 +26,12 @@ pipeline {
         stage('3. Adım: Raporları Yayınla') {
             steps {
                 junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('4. Adım: Dosyaları Arşivle') {
+            steps {
+                // Test sonuçlarını ve varsa screenshot klasörünü Jenkins üzerinde saklar
+                archiveArtifacts artifacts: 'target/*.xml, target/*.png', allowEmptyArchive: true
             }
         }
     }
