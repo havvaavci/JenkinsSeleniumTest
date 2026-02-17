@@ -3,27 +3,42 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 public class FirstJenkinsTest {
     @Test
     public void testGoogle() {
-        // Driver'ı otomatik kurar
-        WebDriverManager.chromedriver().setup();
+        // 1. ADIM: Jenkins'ten (Maven) gelen parametreyi oku
+        String browser = System.getProperty("browser");
 
-        // AWS (Jenkins) ekranı olmadığı için arka planda (headless) çalışmalı
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
+        // Eğer parametre boş gelirse (yerelde çalıştırırken) varsayılan olarak chrome olsun
+        if (browser == null) {
+            browser = "chrome";
+        }
 
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver;
 
+        // 2. ADIM: Karar Mekanizması (İşte aradığın if blokları)
+        if (browser.equalsIgnoreCase("firefox")) {
+            WebDriverManager.firefoxdriver().setup();
+            FirefoxOptions options = new FirefoxOptions();
+            options.addArguments("--headless"); // AWS için şart
+            driver = new FirefoxDriver(options);
+        } else {
+            // Varsayılan Chrome
+            WebDriverManager.chromedriver().setup();
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            driver = new ChromeDriver(options);
+        }
+
+        // 3. ADIM: Test Adımları (Aynı kalıyor)
         driver.get("https://www.google.com");
+        System.out.println("Şu an çalışan tarayıcı: " + browser);
         System.out.println("Başarıyla bağlandık! Sayfa başlığı: " + driver.getTitle());
-        //org.junit.jupiter.api.Assertions.assertEquals("Amazon", driver.getTitle());
-        System.out.println("Webhook ile baglanip jenkinsden triggerle test calistirma denemesi");
-        System.out.println("Email'e bildirim denemesi");
-        System.out.println("Testi duzeltme versiyonu");
 
         driver.quit();
     }

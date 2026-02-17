@@ -18,8 +18,8 @@ pipeline {
 
         stage('2. Adım: Testleri Koştur') {
             steps {
-                // Windows ise 'bat', Linux/AWS ise 'sh' kullanılır
-                sh 'mvn clean test'
+                // Parametreyi -Dbrowser komutuyla Maven'a gönderiyoruz
+                sh "mvn clean test -Dbrowser=${params.BROWSER}"
             }
         }
 
